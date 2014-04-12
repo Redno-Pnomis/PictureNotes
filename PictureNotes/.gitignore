@@ -1,0 +1,17 @@
+# IDEA Ignores
+*.ipr
+*.iws
+local.properties
+.idea/workspace.xml
+.idea
+*.iml
+
+# Generic Android ignores
+bin/
+target
+gen/
+out/
+
+# Gradle Android ignores
+build/
+.gradle
