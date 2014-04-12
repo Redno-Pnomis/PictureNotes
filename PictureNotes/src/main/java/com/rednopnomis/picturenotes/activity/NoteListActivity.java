@@ -1,8 +1,13 @@
-package com.rednopnomis.picturenotes;
+package com.rednopnomis.picturenotes.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+
+import com.crashlytics.android.Crashlytics;
+import com.rednokit.controller.base.BaseController;
+import com.rednopnomis.picturenotes.R;
+import com.rednopnomis.picturenotes.fragment.NoteDetailFragment;
+import com.rednopnomis.picturenotes.fragment.NoteListFragment;
 
 
 /**
@@ -14,14 +19,14 @@ import android.support.v4.app.FragmentActivity;
  * item details side-by-side using two vertical panes.
  * <p/>
  * The activity makes heavy use of fragments. The list of items is a
- * {@link NoteListFragment} and the item details
- * (if present) is a {@link NoteDetailFragment}.
+ * {@link com.rednopnomis.picturenotes.fragment.NoteListFragment} and the item details
+ * (if present) is a {@link com.rednopnomis.picturenotes.fragment.NoteDetailFragment}.
  * <p/>
  * This activity also implements the required
- * {@link NoteListFragment.Callbacks} interface
+ * {@link com.rednopnomis.picturenotes.fragment.NoteListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class NoteListActivity extends FragmentActivity
+public class NoteListActivity extends BaseController
         implements NoteListFragment.Callbacks {
 
     /**
@@ -33,6 +38,8 @@ public class NoteListActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
+
         setContentView(R.layout.activity_note_list);
 
         if (findViewById(R.id.note_detail_container) != null) {
@@ -57,24 +64,23 @@ public class NoteListActivity extends FragmentActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(int _id) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(NoteDetailFragment.ARG_ITEM_ID, id);
+            arguments.putInt(NoteDetailFragment.ARG_ITEM_ID, _id);
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.note_detail_container, fragment)
                     .commit();
-
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, NoteDetailActivity.class);
-            detailIntent.putExtra(NoteDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(NoteDetailFragment.ARG_ITEM_ID, _id);
             startActivity(detailIntent);
         }
     }

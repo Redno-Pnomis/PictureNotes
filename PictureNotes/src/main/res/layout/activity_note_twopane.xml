@@ -8,7 +8,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="com.rednopnomis.picturenotes.NoteListActivity">
+    tools:context="com.rednopnomis.picturenotes.activity.NoteListActivity">
 
     <!--
     This layout is a two-pane layout for the Notes
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/note_list"
-        android:name="com.rednopnomis.picturenotes.NoteListFragment"
+        android:name="com.rednopnomis.picturenotes.fragment.NoteListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

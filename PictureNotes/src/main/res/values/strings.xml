@@ -3,5 +3,10 @@
 
     <string name="app_name">PictureNotes</string>
     <string name="title_note_detail">Note Detail</string>
+    <string name="newNote">New Note</string>
+    <string name="save">Save</string>
+    <string name="titleAndTextRequired">Both title and text are required</string>
+    <string name="noteSaved">Note saved</string>
+    <string name="problemSaving">Problem saving note!</string>
 
 </resources>

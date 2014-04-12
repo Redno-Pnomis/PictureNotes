@@ -1,10 +1,12 @@
-package com.rednopnomis.picturenotes;
+package com.rednopnomis.picturenotes.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
+
+import com.rednokit.controller.base.BaseController;
+import com.rednopnomis.picturenotes.R;
+import com.rednopnomis.picturenotes.fragment.NoteDetailFragment;
 
 
 /**
@@ -14,9 +16,9 @@ import android.view.MenuItem;
  * in a {@link NoteListActivity}.
  * <p/>
  * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link NoteDetailFragment}.
+ * more than a {@link com.rednopnomis.picturenotes.fragment.NoteDetailFragment}.
  */
-public class NoteDetailActivity extends FragmentActivity {
+public class NoteDetailActivity extends BaseController {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +26,7 @@ public class NoteDetailActivity extends FragmentActivity {
         setContentView(R.layout.activity_note_detail);
 
         // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -39,8 +41,8 @@ public class NoteDetailActivity extends FragmentActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(NoteDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(NoteDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(NoteDetailFragment.ARG_ITEM_ID,
+                    getIntent().getIntExtra(NoteDetailFragment.ARG_ITEM_ID, 0));
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -50,7 +52,7 @@ public class NoteDetailActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
