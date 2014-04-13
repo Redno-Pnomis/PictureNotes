@@ -123,6 +123,7 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
                 new DismissListener() {
                     @Override
                     public void onDismiss(int _id) {
+                        //item is hid in parent class, thus we only need to restart the loader here.
                         mActivity.getSupportLoaderManager()
                                 .restartLoader(NoteRepo.NoteLoader.ID, null, NoteListFragment.this);
                         final Note note = Note.getBy_Id(_id);

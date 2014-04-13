@@ -22,50 +22,12 @@ public class NoteAdapter extends CursorAdapter {
         mInflater = LayoutInflater.from(context);
     }
 
-    public static class ViewHolder {
-        @InjectView(R.id.note_item_title)
-        TextView title;
-        @InjectView(R.id.note_item_update_date)
-        TextView updateDate;
-        @InjectView(R.id.note_item_text)
-        TextView text;
-
-        int titleColumn;
-        int updateDateColumn;
-        int textColumn;
-
-        public ViewHolder(View view, Cursor cursor) {
-            ButterKnife.inject(this, view);
-            titleColumn = cursor.getColumnIndexOrThrow(Note.TITLE_COLUMN);
-            updateDateColumn = cursor.getColumnIndexOrThrow(Note.LAST_UPDATED_COLUMN);
-            textColumn = cursor.getColumnIndexOrThrow(Note.TEXT_COLUMN);
-        }
-    }
-
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.note_list_item, parent, false);
     }
 
-    public static class ViewHolder {
-        @InjectView(R.id.note_item_title)
-        TextView title;
-        @InjectView(R.id.note_item_update_date)
-        TextView updateDate;
-        @InjectView(R.id.note_item_text)
-        TextView text;
-
-        int titleColumn;
-        int updateDateColumn;
-        int textColumn;
-
-        public ViewHolder(View view, Cursor cursor) {
-            ButterKnife.inject(this, view);
-            titleColumn = cursor.getColumnIndexOrThrow(Note.TITLE_COLUMN);
-            updateDateColumn = cursor.getColumnIndexOrThrow(Note.LAST_UPDATED_COLUMN);
-            textColumn = cursor.getColumnIndexOrThrow(Note.TEXT_COLUMN);
-        }
-    }    @Override
+    @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
@@ -77,5 +39,25 @@ public class NoteAdapter extends CursorAdapter {
         holder.updateDate.setText(cursor.getString(holder.updateDateColumn));
         holder.text.setText(cursor.getString(holder.textColumn));
 
+    }
+
+    public static class ViewHolder {
+        @InjectView(R.id.note_item_title)
+        TextView title;
+        @InjectView(R.id.note_item_update_date)
+        TextView updateDate;
+        @InjectView(R.id.note_item_text)
+        TextView text;
+
+        int titleColumn;
+        int updateDateColumn;
+        int textColumn;
+
+        public ViewHolder(View view, Cursor cursor) {
+            ButterKnife.inject(this, view);
+            titleColumn = cursor.getColumnIndexOrThrow(Note.TITLE_COLUMN);
+            updateDateColumn = cursor.getColumnIndexOrThrow(Note.LAST_UPDATED_COLUMN);
+            textColumn = cursor.getColumnIndexOrThrow(Note.TEXT_COLUMN);
+        }
     }
 }

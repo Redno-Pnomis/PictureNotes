@@ -22,7 +22,7 @@ android {
 
 dependencies {
     apt group: 'com.jakewharton', name: 'butterknife', version: '4.0.1'
-    compile group: 'com.rednokit', name: 'android', version: '1.0.2', ext: 'aar'
+    compile group: 'com.rednokit', name: 'android', version: '1.0.3', ext: 'aar'
     /* Crashlytics */
     compile group: 'com.crashlytics.android', name: 'crashlytics', version: '1.+'
     /* Maven Central Java Libraries */
