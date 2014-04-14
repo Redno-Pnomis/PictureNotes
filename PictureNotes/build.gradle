@@ -3,7 +3,7 @@ apply plugin: 'android-apt'
 apply plugin: 'crashlytics'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion "Google Inc.:Google APIs:19"
     buildToolsVersion '19.0.3'
 
     defaultConfig {

@@ -14,6 +14,7 @@ public class PictureNotes {
     public static final Session.AccessType ACCESS_TYPE = Session.AccessType.DROPBOX;
     public static String sTag = "PictureNotes";
     public static String mDropboxAccessToken;
+    public static boolean sTwoPane;
 
     public enum Database {
         PictureNotes

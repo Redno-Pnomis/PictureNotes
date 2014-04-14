@@ -11,13 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.dropbox.chooser.android.DbxChooser;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.stmt.query.OrderBy;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimationAdapter;
 import com.rednokit.RednoKit;
 import com.rednokit.fragment.SwipeDismissListFragment;
@@ -30,11 +30,10 @@ import com.rednopnomis.picturenotes.adapter.NoteAdapter;
 import com.rednopnomis.picturenotes.model.bll.Note;
 import com.rednopnomis.picturenotes.model.dal.NoteRepo;
 import com.rednopnomis.picturenotes.task.DropboxUploadTask;
-
-import java.sql.SQLException;
-
 import uk.co.senab.actionbarpulltorefresh.library.Options;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+
+import java.sql.SQLException;
 
 
 /**
@@ -243,7 +242,7 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
             return;
         }
 
-        Cursor cursor = (Cursor) mAdapter.getItem(mSelectedNotePosition);
+        Cursor cursor = (Cursor) mAdapter.getItem(id);
         if (cursor != null) {
 
             DropboxUploadTask upload = new DropboxUploadTask(mActivity,
@@ -331,7 +330,8 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
         } catch (SQLException e) {
             RednoKit.errorLog(TAG, "onCreateLoader", e);
         }
-        return new NoteRepo.NoteLoader(mActivity, noteWhere, null);
+
+        return new NoteRepo.NoteLoader(mActivity, noteWhere, new OrderBy(Note.LAST_UPDATED_COLUMN, false));
     }
 
     @Override

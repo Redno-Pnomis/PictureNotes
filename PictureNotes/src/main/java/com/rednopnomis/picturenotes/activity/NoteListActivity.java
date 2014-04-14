@@ -2,12 +2,12 @@ package com.rednopnomis.picturenotes.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.chooser.android.DbxChooser;
 import com.rednokit.RednoKit;
 import com.rednokit.controller.base.BaseController;
 import com.rednokit.utility.appmsg.AppMsg;
+import com.rednopnomis.picturenotes.PictureNotes;
 import com.rednopnomis.picturenotes.R;
 import com.rednopnomis.picturenotes.fragment.NoteDetailFragment;
 import com.rednopnomis.picturenotes.fragment.NoteListFragment;
@@ -38,7 +38,7 @@ import java.util.Date;
  * to listen for item selections.
  */
 public class NoteListActivity extends BaseController
-        implements NoteListFragment.Callbacks {
+        implements NoteListFragment.Callbacks, NoteDetailFragment.Callbacks {
 
     public static final int DBX_CHOOSER_REQUEST = 0;  // You can change this if needed
     public static final String TAG = NoteListActivity.class.getSimpleName();
@@ -46,7 +46,6 @@ public class NoteListActivity extends BaseController
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private boolean mTwoPane;
     private NoteListFragment mNoteListFragment;
 
     @Override
@@ -63,7 +62,7 @@ public class NoteListActivity extends BaseController
             // large-screen layouts (res/values-large and
             // res/values-sw600dp). If this view is present, then the
             // activity should be in two-pane mode.
-            mTwoPane = true;
+            PictureNotes.sTwoPane = true;
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
@@ -79,7 +78,7 @@ public class NoteListActivity extends BaseController
      */
     @Override
     public void onItemSelected(int _id) {
-        if (mTwoPane) {
+        if (PictureNotes.sTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
@@ -106,8 +105,9 @@ public class NoteListActivity extends BaseController
                 DbxChooser.Result result = new DbxChooser.Result(data);
                 Note note = new Note();
                 File file = new File(result.getLink().getPath());
-                String[] parts = result.getName().split(".");
-                if (!parts[1].equalsIgnoreCase("txt")) {
+                String name = result.getName();
+                String[] parts = name.split("\\.");
+                if (parts.length > 1 && !parts[1].equalsIgnoreCase("txt")) {
                     makeCrouton(getString(R.string.mustHaveTxtExtension), AppMsg.STYLE_ALERT);
                     return;
                 }
@@ -115,15 +115,12 @@ public class NoteListActivity extends BaseController
                 InputStream inputStream = null;
                 String text = "";
                 try {
-                    //f = new BufferedInputStream(new FileInputStream(filePath));
-                    //f.read(buffer);
 
                     inputStream = new FileInputStream(file);
                     char current;
                     while (inputStream.available() > 0) {
                         current = (char) inputStream.read();
                         text = text + String.valueOf(current);
-
                     }
 
                 } catch (Exception e) {
@@ -149,6 +146,14 @@ public class NoteListActivity extends BaseController
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onItemSaved() {
+        if (mNoteListFragment != null) {
+            getSupportLoaderManager()
+                    .restartLoader(NoteRepo.NoteLoader.ID, null, mNoteListFragment);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.rednopnomis.picturenotes.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -8,21 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.rednokit.fragment.base.BaseFragment;
 import com.rednokit.utility.appmsg.AppMsg;
+import com.rednopnomis.picturenotes.PictureNotes;
 import com.rednopnomis.picturenotes.PictureNotesApplication;
 import com.rednopnomis.picturenotes.R;
 import com.rednopnomis.picturenotes.activity.NoteListActivity;
 import com.rednopnomis.picturenotes.model.bll.Note;
 
 import java.util.Date;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * A fragment representing a single Note detail screen.
@@ -40,6 +40,21 @@ public class NoteDetailFragment extends BaseFragment {
     protected EditText mTitle;
     @InjectView(R.id.note_text)
     protected EditText mText;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
+
     /**
      * The content this fragment is presenting.
      */
@@ -51,6 +66,17 @@ public class NoteDetailFragment extends BaseFragment {
      */
     public NoteDetailFragment() {
     }
+
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSaved() {
+        }
+    };
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,14 +119,14 @@ public class NoteDetailFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_note:
-                doValidation();
+                saveNote();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void doValidation() {
+    public void saveNote() {
         if (TextUtils.isEmpty(mTitle.getText()) || TextUtils.isEmpty(mText.getText())) {
             PictureNotesApplication.sendCroutonBroadcast(mActivity.getString(R.string.titleAndTextRequired), AppMsg.STYLE_ALERT, mActivity);
         } else {
@@ -108,7 +134,12 @@ public class NoteDetailFragment extends BaseFragment {
             mItem.setText(mText.getText().toString());
             mItem.setLastUpdated(new Date());
             if (mItem.saveOrUpdate()) {
-                NavUtils.navigateUpTo(mActivity, new Intent(mActivity, NoteListActivity.class));
+                if(!PictureNotes.sTwoPane){
+                    NavUtils.navigateUpTo(mActivity, new Intent(mActivity,
+                            NoteListActivity.class));
+                } else {
+                    mCallbacks.onItemSaved();
+                }
                 PictureNotesApplication.sendCroutonBroadcast(mActivity.getString(R.string.noteSaved), AppMsg.STYLE_INFO, mActivity, 500);
             } else {
                 PictureNotesApplication.sendCroutonBroadcast(mActivity.getString(R.string.problemSaving), AppMsg.STYLE_ALERT, mActivity);
@@ -116,4 +147,10 @@ public class NoteDetailFragment extends BaseFragment {
         }
     }
 
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been saved.
+         */
+        public void onItemSaved();
+    }
 }

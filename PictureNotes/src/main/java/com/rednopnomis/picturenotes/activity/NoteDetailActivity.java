@@ -18,7 +18,7 @@ import com.rednopnomis.picturenotes.fragment.NoteDetailFragment;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link com.rednopnomis.picturenotes.fragment.NoteDetailFragment}.
  */
-public class NoteDetailActivity extends BaseController {
+public class NoteDetailActivity extends BaseController implements NoteDetailFragment.Callbacks{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,5 +66,10 @@ public class NoteDetailActivity extends BaseController {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSaved() {
+        //Do nothing in this dummy implementation.
     }
 }
