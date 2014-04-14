@@ -28,9 +28,20 @@
                 android:value="com.rednopnomis.picturenotes.NoteListActivity" />
         </activity>
 
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="ae461c14822c5c0bdeae86a2211d72b0a77ae754" />
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <!-- Change this to be db- followed by your app key -->
+                <data android:scheme="db-y87m9gokym4jt45" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="ae461c14822c5c0bdeae86a2211d72b0a77ae754" />

@@ -8,5 +8,12 @@
     <string name="titleAndTextRequired">Both title and text are required</string>
     <string name="noteSaved">Note saved</string>
     <string name="problemSaving">Problem saving note!</string>
+    <string name="importExport">Import/Export</string>
+    <string name="dropboxUpload">Upload to Dropbox</string>
+    <string name="noteUploadProblem">Problem uploading document!</string>
+    <string name="dropboxIcon">dropboxIcon</string>
+    <string name="uploadSuccessful">Upload Successful</string>
+    <string name="noFilesDownloaded">No files were downloaded</string>
+    <string name="mustHaveTxtExtension">File must have a txt extension</string>
 
 </resources>

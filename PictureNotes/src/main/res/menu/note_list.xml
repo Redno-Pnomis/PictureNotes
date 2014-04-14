@@ -5,4 +5,9 @@
         android:icon="@android:drawable/ic_menu_add"
         android:showAsAction="always"
         android:title="@string/newNote" />
+    <item
+        android:id="@+id/note_download"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:showAsAction="always"
+        android:title="@string/importExport" />
 </menu>

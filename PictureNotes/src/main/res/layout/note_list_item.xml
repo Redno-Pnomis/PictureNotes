@@ -5,11 +5,30 @@
     android:orientation="vertical"
     android:padding="7dp">
 
-    <TextView
-        android:id="@+id/note_item_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="3dp" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/note_item_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:padding="3dp"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Large" />
+
+        <ImageView
+            android:id="@+id/dropbox_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/dropboxIcon"
+            android:src="@drawable/ic_dropbox_blue"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/note_item_update_date"
@@ -21,6 +40,9 @@
         android:id="@+id/note_item_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="3dp" />
+        android:ellipsize="end"
+        android:padding="3dp"
+        android:singleLine="true" />
+
 
 </LinearLayout>

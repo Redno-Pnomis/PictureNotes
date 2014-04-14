@@ -6,12 +6,15 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import com.dropbox.chooser.android.DbxChooser;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 import com.j256.ormlite.stmt.Where;
@@ -19,15 +22,20 @@ import com.nhaarman.listviewanimations.swinginadapters.prepared.AlphaInAnimation
 import com.rednokit.RednoKit;
 import com.rednokit.fragment.SwipeDismissListFragment;
 import com.rednokit.model.bll.base.BaseModel;
+import com.rednopnomis.picturenotes.PictureNotes;
+import com.rednopnomis.picturenotes.PictureNotesApplication;
 import com.rednopnomis.picturenotes.R;
+import com.rednopnomis.picturenotes.activity.NoteListActivity;
 import com.rednopnomis.picturenotes.adapter.NoteAdapter;
 import com.rednopnomis.picturenotes.model.bll.Note;
 import com.rednopnomis.picturenotes.model.dal.NoteRepo;
+import com.rednopnomis.picturenotes.task.DropboxUploadTask;
 
 import java.sql.SQLException;
 
 import uk.co.senab.actionbarpulltorefresh.library.Options;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+
 
 /**
  * A list fragment representing a list of Notes. This fragment
@@ -46,6 +54,7 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static int mSelectedNotePosition;
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -60,6 +69,8 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
      * clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+    private boolean mToDownload;
+    private DbxChooser mChooser;
     /**
      * The current activated item position. Only used on tablets.
      */
@@ -149,6 +160,33 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mChooser = new DbxChooser(PictureNotes.DROPBOX_APP_KEY);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (PictureNotesApplication.sDBApi.getSession().authenticationSuccessful()) {
+            try {
+                PictureNotesApplication.sDBApi.getSession().finishAuthentication();
+                PictureNotes.mDropboxAccessToken = PictureNotesApplication.sDBApi.getSession().getOAuth2AccessToken();
+            } catch (IllegalStateException e) {
+                RednoKit.errorLog("DbAuthLog", "Error authenticating", e);
+            }
+        }
+        registerForContextMenu(getListView());
+        if (mSelectedNotePosition != 0) {
+            uploadNote(mSelectedNotePosition);
+        }
+        if (mToDownload) {
+            downloadNote();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        unregisterForContextMenu(getListView());
+        super.onPause();
     }
 
     @Override
@@ -166,15 +204,82 @@ public class NoteListFragment extends SwipeDismissListFragment implements Loader
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_note:
                 mCallbacks.onItemSelected(0);
+                return true;
+            case R.id.note_download:
+                downloadNote();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mActivity.getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.menu_upload:
+                uploadNote(info.position);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void uploadNote(int id) {
+        if (PictureNotes.mDropboxAccessToken == null) {
+            mSelectedNotePosition = id;
+            doDropboxAuth();
+            return;
+        }
+
+        Cursor cursor = (Cursor) mAdapter.getItem(mSelectedNotePosition);
+        if (cursor != null) {
+
+            DropboxUploadTask upload = new DropboxUploadTask(mActivity,
+                    Note.getBy_Id(cursor.getInt(cursor.getColumnIndex(BaseModel._ID_COLUMN))),
+                    new DropboxUploadTask.UploadTaskCallbacks() {
+                        @Override
+                        public void restartLoader() {
+                            mActivity.getSupportLoaderManager()
+                                    .restartLoader(NoteRepo.NoteLoader.ID, null, NoteListFragment.this);
+                            mSelectedNotePosition = 0;
+                        }
+                    }
+            );
+            upload.execute();
+        }
+
+    }
+
+    private void downloadNote() {
+        if (PictureNotes.mDropboxAccessToken == null) {
+            mToDownload = true;
+            doDropboxAuth();
+            return;
+        }
+
+        mChooser.forResultType(DbxChooser.ResultType.FILE_CONTENT)
+                .launch(mActivity, NoteListActivity.DBX_CHOOSER_REQUEST);
+        mToDownload = false;
+    }
+
+    private void doDropboxAuth() {
+        if (!PictureNotesApplication.sDBApi.getSession().authenticationSuccessful()) {
+            PictureNotesApplication.sDBApi.getSession().startOAuth2Authentication(mActivity);
+        }
+    }
+
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {

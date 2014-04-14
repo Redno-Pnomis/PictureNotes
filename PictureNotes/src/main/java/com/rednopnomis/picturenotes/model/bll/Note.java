@@ -15,6 +15,7 @@ public class Note extends BaseModel implements CursorLoadedListItem {
     public static final String LAST_UPDATED_COLUMN = "lastUpdated";
     public static final String TEXT_COLUMN = "text";
     public static final String HIDDEN_COLUMN = "hidden";
+    public static final String DROPBOX_REVISION_COLUMN = "dropboxRevision";
     private static final long serialVersionUID = -2436359145550172003L;
     @DatabaseField(columnName = TITLE_COLUMN, canBeNull = false)
     private String title;
@@ -24,6 +25,8 @@ public class Note extends BaseModel implements CursorLoadedListItem {
     private String text;
     @DatabaseField(columnName = HIDDEN_COLUMN, canBeNull = false, defaultValue = "0")
     private Boolean hidden;
+    @DatabaseField(columnName = DROPBOX_REVISION_COLUMN)
+    private String dropboxRevision;
 
     public static Note getById(int id) {
         return new NoteRepo().getNoteById(id);
@@ -63,6 +66,14 @@ public class Note extends BaseModel implements CursorLoadedListItem {
 
     public void setHidden(Boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public String getDropboxRevision() {
+        return dropboxRevision;
+    }
+
+    public void setDropboxRevision(String dropboxRevision) {
+        this.dropboxRevision = dropboxRevision;
     }
 
     public boolean hide() {

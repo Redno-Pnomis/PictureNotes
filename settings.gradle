@@ -1,1 +1,1 @@
-include ':PictureNotes'
+include ':PictureNotes', ':DropboxChooser'
